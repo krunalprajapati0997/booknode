@@ -194,7 +194,7 @@ module.exports = function (router) {
                         var token = jwt.sign({ email: user.email, id: user._id }, secret, { expiresIn: '24h' });
                         res.json({ success: true, message: 'User authenticated!', token: token });
                     }
-                    // }
+                    }
                 }
             }
         });
