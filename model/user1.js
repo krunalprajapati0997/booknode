@@ -45,7 +45,7 @@ const newSchema = new mongoose.Schema({
     username: {
         type: String,
         // required:true
-         validate: nameValidator 
+        //  validate: nameValidator 
         
     },
 
@@ -55,11 +55,11 @@ const newSchema = new mongoose.Schema({
     },
     email:{
         type:String,
-        required: true, lowercase:true, unique: true, validate: emailValidator
+        // required: true, lowercase:true, unique: true, validate: emailValidator
     },
     phone:{
          type: String,
-          required: true, unique: true, validate: mobileValidator
+        //   required: true, unique: true, validate: mobileValidator
     },
     profile_file:{
         type:String

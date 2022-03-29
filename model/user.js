@@ -79,7 +79,6 @@ const examSchema = new mongoose.Schema({
     },
     profile_url: { type: String }
 })
-
 examSchema.pre('save', function(next) {
     var user = this;
 
