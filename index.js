@@ -6,7 +6,8 @@ const cors = require("cors")
 const bodyParser = require('body-parser');
 const appRoutes = require("./route/api")(router);
 app.use('/upload',express.static('uploads'));
-// var PORT = process.env.PORT ||8077
+var PORT = process.env.PORT ||6543
+
 
 const mongoose = require('mongoose')
 
@@ -21,8 +22,8 @@ app.use(bodyParser.urlencoded({ extended:false}));
 
 app.use('/',appRoutes);
 
-app.listen(6543,function(req,res){
-    console.log('port is running')
-})
+// app.listen(6543,function(req,res){
+//     console.log('port is running')
+// })
 
-// app.listen(PORT,()=>console.log("succsessfull",PORT));
+app.listen(PORT,()=>console.log("succsessfull",PORT));
