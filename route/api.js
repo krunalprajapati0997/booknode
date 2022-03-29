@@ -1,9 +1,9 @@
 const express = require("express");
 const Exam = require("../model/user")
 const New = require("../model/user1")
-const upload = require("../middleware/upload");
+const uploads = require("../middleware/uploads");
 const fs = require("fs");
-const uploadsDir = __dirname + '../uploads';
+const uploadssDir = __dirname + '../uploadss';
 
 const jwt = require('jsonwebtoken');
 var secret = 'harrypotter';
@@ -11,7 +11,7 @@ const { ObjectId } = require("mongodb")
 module.exports = function (router) {
 
     router.post('/book', (req, res) => {
-        upload(req, res, function (err) {
+        uploads(req, res, function (err) {
             console.log("req.file---", req.file);
             console.log("req.body", req.body)
             if (err) {
@@ -21,7 +21,7 @@ module.exports = function (router) {
                     res.json({ success: false, message: 'Invaild : Only jpeg, jpg and png supported !!!' });
                 } else {
                     console.log(err);
-                    res.json({ success: false, message: 'Profile Image not upload !!!' });
+                    res.json({ success: false, message: 'Profile Image not uploads !!!' });
                 }
             } else {
                 if (!req.file) {
@@ -38,7 +38,7 @@ module.exports = function (router) {
                     data.quantities = req.body.quantities
                     data.price = req.body.price
                     data.profile_file = req.file.filename
-                    data.profile_url = "http://localhost:8000/upload/" + req.file.filename;
+                    data.profile_url = "http://localhost:8000/uploadss/" + req.file.filename;
                     data.save(function (err) {
                         if (err) {
                             console.log(err.errors.name);
@@ -59,7 +59,7 @@ module.exports = function (router) {
     })
 
     router.post('/', (req, res) => {
-        upload(req, res, function (err) {
+        uploads(req, res, function (err) {
             console.log("req.file---", req.file);
             console.log("req.body", req.body)
             if (err) {
@@ -69,7 +69,7 @@ module.exports = function (router) {
                     res.json({ success: false, message: 'Invaild : Only jpeg, jpg and png supported !!!' });
                 } else {
                     console.log(err);
-                    res.json({ success: false, message: 'Profile Image not upload !!!' });
+                    res.json({ success: false, message: 'Profile Image not uploads !!!' });
                 }
             } else {
                 if (!req.file) {
@@ -86,7 +86,7 @@ module.exports = function (router) {
                     data.quantities = req.body.quantities
                     data.price = req.body.price
                     data.profile_file = req.file.filename
-                    data.profile_url = "http://localhost:8000/upload/" + req.file.filename;
+                    data.profile_url = "http://localhost:8000/uploads/" + req.file.filename;
                     data.save(function (err) {
                         if (err) {
                             console.log(err.errors.username);
@@ -127,7 +127,7 @@ module.exports = function (router) {
         })
     });
     router.post('/Add', (req, res) => {
-        upload(req, res, function (err) {
+        uploads(req, res, function (err) {
             // console.log("req.file---", req.file);
             // console.log("req.body",req.body)
             // if (err) {
@@ -137,7 +137,7 @@ module.exports = function (router) {
             //         res.json({ success: false, message: 'Invaild : Only jpeg, jpg and png supported !!!' });
             //     } else {
             //         console.log(err);
-            //         res.json({ success: false, message: 'Profile Image not upload !!!' });
+            //         res.json({ success: false, message: 'Profile Image not uploads !!!' });
             //     }
             // } else {
             // if (!req.file) {
@@ -154,7 +154,7 @@ module.exports = function (router) {
             // data.quantities = req.body.quantities
             // data.price=req.body.price
             data.profile_file = req.file.filename;
-            data.profile_url = "http://localhost:8000/upload/" + req.file.filename;
+            data.profile_url = "http://localhost:8000/uploads/" + req.file.filename;
             data.save(function (err) {
                 if (err) {
                     console.log(err.errors.username);
@@ -308,7 +308,7 @@ module.exports = function (router) {
     });
 
 
-    router.put('/:id', upload, async (req, res) => {
+    router.put('/:id', uploads, async (req, res) => {
 
         New.findById(ObjectId(req.decoded.id)).exec((err, data) => {
             if (req.file == null) {
@@ -325,7 +325,7 @@ module.exports = function (router) {
                 // result.password = req.body.password
                 data.phone = req.body.phone
                 data.profile_file = req.file.filename;
-                data.profile_url = "http://localhost:8000/upload/" + req.file.filename;
+                data.profile_url = "http://localhost:8000/uploads/" + req.file.filename;
                 data.save(function (err) {
                     if (err) {
                         console.log(err);
@@ -336,7 +336,7 @@ module.exports = function (router) {
         })
     });
     
-    router.put('/e/:id', upload, async (req, res) => {
+    router.put('/e/:id', uploads, async (req, res) => {
 
         Exam.findById({ _id: req.params.id }).exec((err, data) => {
             if (req.file == null) {
@@ -353,7 +353,7 @@ module.exports = function (router) {
                 data.quantities = req.body.quantities
                 data.price = req.body.price
                 data.profile_file = req.file.filename;
-                data.profile_url = "http://localhost:8000/upload/" + req.file.filename;
+                data.profile_url = "http://localhost:8000/uploads/" + req.file.filename;
                 data.save(function (err) {
                     if (err) {
                         console.log(err);
