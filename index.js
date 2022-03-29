@@ -6,7 +6,7 @@ const cors=require("cors")
 const bodyParser = require('body-parser');
 const appRoutes = require("./route/api")(router);
 app.use('/upload',express.static('uploads'));
-var PORT = process.env.PORT ||8000
+var PORT = process.env.PORT ||8009
 
 const mongoose = require('mongoose')
 
