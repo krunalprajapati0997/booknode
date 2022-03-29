@@ -38,7 +38,7 @@ module.exports = function (router) {
                     data.quantities = req.body.quantities
                     data.price = req.body.price
                     data.profile_file = req.file.filename
-                    data.profile_url = "http://localhost:8077/upload/" + req.file.filename;
+                    data.profile_url = "http://localhost:6543/upload/" + req.file.filename;
                     data.save(function (err) {
                         if (err) {
                             console.log(err.errors.name);
@@ -86,7 +86,7 @@ module.exports = function (router) {
                     data.quantities = req.body.quantities
                     data.price = req.body.price
                     data.profile_file = req.file.filename
-                    data.profile_url = "http://localhost:8077/upload/" + req.file.filename;
+                    data.profile_url = "http://localhost:6543/upload/" + req.file.filename;
                     data.save(function (err) {
                         if (err) {
                             console.log(err.errors.username);
@@ -154,7 +154,7 @@ module.exports = function (router) {
             // data.quantities = req.body.quantities
             // data.price=req.body.price
             data.profile_file = req.file.filename;
-            data.profile_url = "http://localhost:8077/upload/" + req.file.filename;
+            data.profile_url = "http://localhost:6543/upload/" + req.file.filename;
             data.save(function (err) {
                 if (err) {
                     console.log(err.errors.username);
@@ -325,7 +325,7 @@ module.exports = function (router) {
                 // result.password = req.body.password
                 data.phone = req.body.phone
                 data.profile_file = req.file.filename;
-                data.profile_url = "http://localhost:8077/upload/" + req.file.filename;
+                data.profile_url = "http://localhost:6543/upload/" + req.file.filename;
                 data.save(function (err) {
                     if (err) {
                         console.log(err);
@@ -353,7 +353,7 @@ module.exports = function (router) {
                 data.quantities = req.body.quantities
                 data.price = req.body.price
                 data.profile_file = req.file.filename;
-                data.profile_url = "http://localhost:8077//upload/" + req.file.filename;
+                data.profile_url = "http://localhost:6543/upload/" + req.file.filename;
                 data.save(function (err) {
                     if (err) {
                         console.log(err);
