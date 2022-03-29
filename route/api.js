@@ -26,13 +26,13 @@ module.exports = function (router) {
             } else {
                 if (!req.file) {
                     res.json({ success: false, message: 'No file selected !!!' });
-                } 
+                }
                 else {
                     let data = new Exam()
                     data.name = req.body.name
-                    data.password=req.body.password;
-                    data.email=req.body.email;
-                    data.phone=req.body.phone;
+                    data.password = req.body.password;
+                    data.email = req.body.email;
+                    data.phone = req.body.phone;
                     data.username = req.body.username
                     data.description = req.body.description
                     data.quantities = req.body.quantities
@@ -74,7 +74,7 @@ module.exports = function (router) {
             } else {
                 if (!req.file) {
                     res.json({ success: false, message: 'No file selected !!!' });
-                } 
+                }
                 else {
                     let data = new Exam();
                     // data.name = req.body.name
@@ -144,35 +144,36 @@ module.exports = function (router) {
             //     res.json({ success: false, message: 'No file selected !!!' });
             // } else 
             // {
-            let data = new New()
-            // data.name=req.body.name;
-            data.password = req.body.password;
-            data.email = req.body.email;
-            data.phone = req.body.phone;
-            data.username = req.body.username
-            // data.description = req.body.description
-            // data.quantities = req.body.quantities
-            // data.price=req.body.price
-            data.profile_file = req.file.filename;
-            data.profile_url = "https://bookstorelibrary.herokuapp.com/upload/" + req.file.filename;
-            data.save(function (err) {
-                if (err) {
-                    console.log(err.errors.username);
-                    if (err.errors.username) {
-                        res.json({ success: false, message: "Name is required" });
-                    }
-                    else {
-                        res.json({ success: false, message: err });
-                    }
-                } else {
-                    res.json({ success: true, message: 'Registration Successfully' });
+            if (req.file === null) {
+                    let data = new New()
+                    data.password = req.body.password;
+                    data.email = req.body.email;
+                    data.phone = req.body.phone;
+                    data.username = req.body.username
+                }else{
+                    data.password = req.body.password;
+                    data.email = req.body.email;
+                    data.phone = req.body.phone;
+                    data.username = req.body.username
+                    data.profile_file = req.file.filename;
+                    data.profile_url = "https://bookstorelibrary.herokuapp.com/upload/" + req.file.filename; 
                 }
-            });
-            // }
-            // }
-            // })
+                data.save(function (err) {
+                    if (err) {
+                        console.log(err.errors.username);
+                        if (err.errors.username) {
+                            res.json({ success: false, message: "Name is required" });
+                        }
+                        else {
+                            res.json({ success: false, message: err });
+                        }
+                    } else {
+                        res.json({ success: true, message: 'Registration Successfully' });
+                    }
+                });
+                
 
-        })
+            })
 
 
     });
@@ -189,11 +190,11 @@ module.exports = function (router) {
                         var validPassword = user.comparePassword(req.body.password);
                         if (!validPassword) {
                             res.json({ success: false, message: 'Could not authenticate password' });
-                        } else{
-                        // res.send(user);
-                        var token = jwt.sign({ email: user.email, id: user._id }, secret, { expiresIn: '24h' });
-                        res.json({ success: true, message: 'User authenticated!', token: token });
-                    }
+                        } else {
+                            // res.send(user);
+                            var token = jwt.sign({ email: user.email, id: user._id }, secret, { expiresIn: '24h' });
+                            res.json({ success: true, message: 'User authenticated!', token: token });
+                        }
                     }
                 }
             }
@@ -223,7 +224,7 @@ module.exports = function (router) {
     //         }
     //     });
     // });
-    
+
     router.get('/', async (req, res) => {
         // console.log("deedddcode", req.decoded)
         New.find({}).exec(function (err, user) {
@@ -294,7 +295,7 @@ module.exports = function (router) {
     //     }));
 
     // });
-    
+
     router.get('/Abc', async (req, res) => {
         console.log("deedddcode", req.decoded)
         New.findById(ObjectId(req.decoded.id)).exec(function (err, user) {
@@ -335,7 +336,7 @@ module.exports = function (router) {
             }
         })
     });
-    
+
     router.put('/e/:id', upload, async (req, res) => {
 
         Exam.findById({ _id: req.params.id }).exec((err, data) => {
