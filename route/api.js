@@ -4,11 +4,58 @@ const New = require("../model/user1")
 const upload = require("../middleware/upload");
 const fs = require("fs");
 const uploadsDir = __dirname + '../upload';
+const config = require('../conf/config');
+const client = require('twilio')(config.accountID, config.authToken)
+
+var GoogleStrategy = require('passport-google-oauth2').Strategy;
+const { ObjectId } = require("mongodb")
+const { OAuth2Client } = require('google-auth-library');
+const { Console } = require("console");
+const client1 = new OAuth2Client(process.env.CLIENT_ID)
+CLIENT_ID = "909333294270-7rl7blhp6a051hdp7nfj95am8lc4ur1t.apps.googleusercontent.com"
 
 const jwt = require('jsonwebtoken');
 var secret = 'harrypotter';
-const { ObjectId } = require("mongodb")
 module.exports = function (router) {
+
+    router.post("/google", async (req, res) => {
+        const { token } = req.body
+        const ticket = await client1.verifyIdToken({
+            idToken: token,
+            audience: CLIENT_ID
+        });
+        const { name, email, picture } = ticket.getPayload();
+        New.find({email:email}).exec(function(err,user){
+            if(user && user.length!= 0){
+                console.log(user)
+                var token1 = jwt.sign({ email: email }, secret, { expiresIn: '24h' });
+                res.json({ success: true, message: 'User authenticated!', token: token1 });
+
+            }
+            else{
+                let mouse = new New()
+                mouse.username = name;
+                mouse.email = email;
+                mouse.profile_file = picture;
+                console.log(name);
+                console.log(email);
+                console.log(picture)
+        
+                mouse.save((err) => {
+                    if (err) {
+                        console.log(err)
+                    } else {
+                        var token1 = jwt.sign({ email: email }, secret, { expiresIn: '24h' });
+                        res.json({ success: true, message: 'User authenticated!', token: token1 });
+        
+                    }
+                })
+        
+
+            }
+        })
+        
+    })
 
     router.post('/book', (req, res) => {
         upload(req, res, function (err) {
@@ -26,19 +73,20 @@ module.exports = function (router) {
             } else {
                 if (!req.file) {
                     res.json({ success: false, message: 'No file selected !!!' });
-                } 
+                }
                 else {
                     let data = new Exam()
                     data.name = req.body.name
-                    data.password=req.body.password;
-                    data.email=req.body.email;
-                    data.phone=req.body.phone;
+                    data.password = req.body.password;
+                    data.email = req.body.email;
+                    data.phone = req.body.phone;
                     data.username = req.body.username
                     data.description = req.body.description
                     data.quantities = req.body.quantities
                     data.price = req.body.price
                     data.profile_file = req.file.filename
-                    data.profile_url = "https://bookstorelibrary.herokuapp.com/upload/" + req.file.filename;
+                    data.profile_url = "http://localhost:6544/upload/" + req.file.filename;
+                    // data.profile_url = "https://bookstorelibrary.herokuapp.com/upload/" + req.file.filename;
                     data.save(function (err) {
                         if (err) {
                             console.log(err.errors.name);
@@ -57,6 +105,7 @@ module.exports = function (router) {
         })
 
     })
+   
 
     router.post('/', (req, res) => {
         upload(req, res, function (err) {
@@ -74,7 +123,7 @@ module.exports = function (router) {
             } else {
                 if (!req.file) {
                     res.json({ success: false, message: 'No file selected !!!' });
-                } 
+                }
                 else {
                     let data = new Exam();
                     // data.name = req.body.name
@@ -86,7 +135,8 @@ module.exports = function (router) {
                     data.quantities = req.body.quantities
                     data.price = req.body.price
                     data.profile_file = req.file.filename
-                    data.profile_url = "https://bookstorelibrary.herokuapp.com/upload/" + req.file.filename;
+                    data.profile_url = "http://localhost:6544/upload/" + req.file.filename;
+                    // data.profile_url = "https://bookstorelibrary.herokuapp.com/upload/" + req.file.filename;
                     data.save(function (err) {
                         if (err) {
                             console.log(err.errors.username);
@@ -105,6 +155,11 @@ module.exports = function (router) {
         })
 
     })
+
+   
+    
+
+
     router.get('/food', async (req, res) => {
         // console.log("deedddcode", req.decoded)
         Exam.find({}).exec(function (err, user) {
@@ -154,7 +209,9 @@ module.exports = function (router) {
             // data.quantities = req.body.quantities
             // data.price=req.body.price
             data.profile_file = req.file.filename;
-            data.profile_url = "https://bookstorelibrary.herokuapp.com/upload/" + req.file.filename;
+
+            data.profile_url = "http://localhost:6544/upload/" + req.file.filename;
+            // data.profile_url = "https://bookstorelibrary.herokuapp.com/upload/" + req.file.filename;
             data.save(function (err) {
                 if (err) {
                     console.log(err.errors.username);
@@ -176,8 +233,9 @@ module.exports = function (router) {
 
 
     });
+
     router.post('/login', function (req, res) {
-        New.findOne({ email: req.body.email }).select('email password').exec(function (err, user) {
+        New.findOne({ email: req.body.email,phone: req.body.phone }).select('email,phone, password').exec(function (err, user) {
             if (err) throw err;
             else {
                 if (!user) {
@@ -189,41 +247,127 @@ module.exports = function (router) {
                         var validPassword = user.comparePassword(req.body.password);
                         if (!validPassword) {
                             res.json({ success: false, message: 'Could not authenticate password' });
-                        } else{
-                        // res.send(user);
-                        var token = jwt.sign({ email: user.email, id: user._id }, secret, { expiresIn: '24h' });
-                        res.json({ success: true, message: 'User authenticated!', token: token });
-                    }
+                        } else {
+                            // res.send(user);
+                            var token = jwt.sign({ email: user.email,phone: user.phone, id: user._id }, secret, { expiresIn: '24h' });
+                            res.json({ success: true, message: 'User authenticated!', token: token });
+                        }
                     }
                 }
             }
         });
     });
 
-    // router.post('/login', function (req, res) {
-    //     Exam.findOne({ email: req.body.email }).select('email password').exec(function (err, user) {
-    //         if (err) throw err;
-    //         else {
-    //             if (!user) {
-    //                 res.json({ success: false, message: 'email and password not provided !!!' });
-    //             } else if (user) {
-    //                 if (!req.body.password) {
-    //                     res.json({ success: false, message: 'No password provided' });
-    //                 } else {
-    //                     // var validPassword = user.comparePassword(req.body.password);
-    //                     // if (validPassword) {
-    //                     //     res.json({ success: false, message: 'Could not authenticate password' });
-    //                     // } else{
-    //                     // res.send(user);
-    //                     var token = jwt.sign({ email: user.email, id: user._id }, secret, { expiresIn: '24h' });
-    //                     res.json({ success: true, message: 'User authenticated!', token: token });
-    //                 }
-    //                 // }
-    //             }
-    //         }
-    //     });
-    // });
+    router.post('/otp', function (req, res) {
+        New.findOne({ phone: req.body.phone }).select('phone password').exec(function (err, user) {
+            if (err) throw err;
+            else {
+                if (!user) {
+                    res.json({ success: false, message: 'phone and password not provided !!!' });
+                } else if (user) {
+                    if (!req.body.password) {
+                        res.json({ success: false, message: 'No password provided' });
+                    } else {
+                        var validPassword = user.comparePassword(req.body.password);
+                        if (!validPassword) {
+                            res.json({ success: false, message: 'Could not authenticate password' });
+                        } else {
+                            client
+                                .verify
+                                .services(config.serviceID)
+                                .verifications
+                                .create({
+                                    to: `+91${req.body.phone}`,
+                                    channel: 'sms'
+                                }).then((data) => {
+                                    res.status(200).json({ data: data })
+                                })
+                            // res.send(user);
+                            // var token = jwt.sign({ phone: user.phone, id: user._id }, secret, { expiresIn: '24h' });
+                            // res.json({ success: true, message: 'User authenticated!', token: token });
+
+                        }
+
+
+                    }
+                }
+            }
+        });
+    });
+
+    router.post('/verify', (req, res) => {
+        New.findOne({
+            phone: req.body.phone,
+        }).exec(function (err, user) {
+            if (err) throw err;
+            else {
+                if (!user) {
+                    res.json({ success: false, message: 'phone and password not provided !!!' });
+                } else if (user) {
+                    console.log("ssss")
+                    client
+                        .verify
+                        .services(config.serviceID)
+                        .verificationChecks
+                        .create({
+                            to: `+91${req.body.phone}`,
+                            code: req.body.code
+                        }).then((data) => {
+              
+                            var token = jwt.sign({ email: user.email, id: user._id }, secret, { expiresIn: '1h' });
     
+                            res.status(200).json({ data: data ,success:true, token:token })
+                        }).catch((err)=>{
+                            console.log(err)
+                            res.status(404).send('otp is expired !!!')
+                        })
+                }
+            }
+        });
+    })
+
+    router.post('/resend', (req, res) => {
+        client
+            .verify
+            .services(config.serviceID)
+            .verifications
+            .create({
+                to: `+91${req.body.phone}`,
+                channel: 'sms'
+            }).then((data) => {
+                res.status(200).json({ data: data })
+            })
+    })
+
+
+    // router.post('/login', (req, res) => {
+
+    //     client
+    //         .verify
+    //         .services(config.serviceID)
+    //         .verifications
+    //         .create({
+    //             to: `+91${req.body.phone}`,
+    //             channel: 'sms'
+    //         }).then((data) => {
+    //             res.status(200).json({ data: data })
+    //         })
+    //     res.send('hello from simple server :)')
+    // })
+
+    // router.post('/verify', (req, res) => {
+    //     client
+    //         .verify
+    //         .services(config.serviceID)
+    //         .verificationChecks
+    //         .create({
+    //             to: `+91${req.body.phone}`,
+    //             code: req.body.code
+    //         }).then((data) => {
+    //             res.status(200).json({ data: data })
+    //         })
+    // })
+
     router.get('/', async (req, res) => {
         // console.log("deedddcode", req.decoded)
         New.find({}).exec(function (err, user) {
@@ -294,7 +438,7 @@ module.exports = function (router) {
     //     }));
 
     // });
-    
+
     router.get('/Abc', async (req, res) => {
         console.log("deedddcode", req.decoded)
         New.findById(ObjectId(req.decoded.id)).exec(function (err, user) {
@@ -325,7 +469,8 @@ module.exports = function (router) {
                 // result.password = req.body.password
                 data.phone = req.body.phone
                 data.profile_file = req.file.filename;
-                data.profile_url = "https://bookstorelibrary.herokuapp.com/upload/" + req.file.filename;
+                data.profile_url = "http://localhost:6544/upload/" + req.file.filename;
+                // data.profile_url = "https://bookstorelibrary.herokuapp.com/upload/" + req.file.filename;
                 data.save(function (err) {
                     if (err) {
                         console.log(err);
@@ -335,7 +480,7 @@ module.exports = function (router) {
             }
         })
     });
-    
+
     router.put('/e/:id', upload, async (req, res) => {
 
         Exam.findById({ _id: req.params.id }).exec((err, data) => {
@@ -353,7 +498,8 @@ module.exports = function (router) {
                 data.quantities = req.body.quantities
                 data.price = req.body.price
                 data.profile_file = req.file.filename;
-                data.profile_url = "https://bookstorelibrary.herokuapp.com/upload/" + req.file.filename;
+                data.profile_url = "http://localhost:6544/upload/" + req.file.filename;
+                // data.profile_url = "https://bookstorelibrary.herokuapp.com/upload/" + req.file.filename;
                 data.save(function (err) {
                     if (err) {
                         console.log(err);

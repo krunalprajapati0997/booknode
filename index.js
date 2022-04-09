@@ -6,7 +6,9 @@ const cors = require("cors")
 const bodyParser = require('body-parser');
 const appRoutes = require("./route/api")(router);
 app.use('/upload',express.static('uploads'));
-var PORT = process.env.PORT ||6543
+const session = require('express-session');
+
+// var PORT = process.env.PORT ||6543
 
 
 const mongoose = require('mongoose')
@@ -15,6 +17,9 @@ const DB ="mongodb+srv://krunalfood:krunal0997@cluster0.c9t3e.mongodb.net/Food?r
 mongoose.connect(DB)
 console.log('Connection succesfully')
 // app.use(morgan('dev'));
+
+
+
 app.use(cors({origin : '*' }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended:false}));
@@ -22,8 +27,9 @@ app.use(bodyParser.urlencoded({ extended:false}));
 
 app.use('/',appRoutes);
 
-// app.listen(6543,function(req,res){
-//     console.log('port is running')
-// })
 
-app.listen(PORT,()=>console.log("succsessfull",PORT));
+app.listen(6544,function(req,res){
+    console.log('port is running')
+})
+
+// app.listen(PORT,()=>console.log("succsessfull",PORT));
