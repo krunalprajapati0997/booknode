@@ -106,6 +106,50 @@ module.exports = function (router) {
 
     })
    
+    router.post('/kru', (req, res) => {
+        upload(req, res, function (err) {
+            console.log("req.file---", req.file);
+            console.log("req.body", req.body)
+            if (err) {
+                if (err.code === 'LIMIT_FILE_SIZE') {
+                    res.json({ success: false, message: 'Profile Image too large !!!' });
+                } else if (err.code === 'filetype') {
+                    res.json({ success: false, message: 'Invaild : Only jpeg, jpg and png supported !!!' });
+                } else {
+                    console.log(err);
+                    res.json({ success: false, message: 'Profile Image not upload !!!' });
+                }
+            } else {
+                if (!req.file) {
+                    res.json({ success: false, message: 'No file selected !!!' });
+                }
+                else {
+                    let data = new Exam();
+                    data.name = req.body.name;
+                    data.description = req.body.description
+                    data.quantities = req.body.quantities
+                    data.price = req.body.price
+                    data.profile_file = req.file.filename
+                    data.profile_url = "http://localhost:6544/upload/" + req.file.filename;
+                    // data.profile_url = "https://bookstorelibrary.herokuapp.com/upload/" + req.file.filename;
+                    data.save(function (err) {
+                        // if (err) {
+                        //     console.log(err.errors.name);
+                        //     if (err.errors.name) {
+                        //         res.json({ success: false, message: "Name is required" });
+                        //     }
+                        //     else {
+                        //         res.json({ success: false, message: err });
+                        //     }
+                        // } else {
+                            res.json({ success: true, message: 'Registration Successfully' });
+                        // }
+                    });
+                }
+            }
+        })
+
+    })
 
     router.post('/', (req, res) => {
         upload(req, res, function (err) {
@@ -181,6 +225,8 @@ module.exports = function (router) {
             }
         })
     });
+
+
     router.post('/Add', (req, res) => {
         upload(req, res, function (err) {
             // console.log("req.file---", req.file);
@@ -379,6 +425,8 @@ module.exports = function (router) {
             }
         })
     });
+
+
     router.delete('/:id', function (req, res) {
         New.findByIdAndDelete({ _id: req.params.id }, function (err, user) {
             if (err) throw err;
@@ -426,30 +474,34 @@ module.exports = function (router) {
         }
     });
 
-    // router.get('/', function(req, res) { 
-    //     console.log("req.decoded",req.decoded)
-    //     New.find({}.exec (function(err, user) {
-    //         if (err) throw err;
-    //         if (!user) {
-    //             res.json({ success: false, message: 'No user found' });
-    //         } else {
-    //             res.json({ success: true, user: user });
-    //         }
-    //     }));
+    router.get('/googelwith', async (req, res) => {
+        console.log("deedddcode", req.decoded)
+        New.find({email : req.decoded.email}).exec(function (err, user) {
+            if (err) throw err;
+            if (!user) {
+                res.json({ success: false, message: 'User not found' });
+            } else {
+                res.json({ success: true, message: 'get details Successfully', data: user });
+            }
+        })
+    });
 
-    // });
+    
 
     router.get('/Abc', async (req, res) => {
         console.log("deedddcode", req.decoded)
         New.findById(ObjectId(req.decoded.id)).exec(function (err, user) {
             if (err) throw err;
             if (!user) {
-                res.json({ success: fale, message: 'User not found' });
+                res.json({ success: false, message: 'User not found' });
             } else {
                 res.json({ success: true, message: 'get details Successfully', data: user });
             }
         })
     });
+
+
+    
 
 
     router.put('/:id', upload, async (req, res) => {
@@ -480,6 +532,35 @@ module.exports = function (router) {
             }
         })
     });
+
+    // router.put('/Google/:id', upload, async (req, res) => {
+
+    //     New.find({email:req.decoded.email}).exec((err, data) => {
+    //         if (req.file == null) {
+    //             data.name = req.body.name
+    //             data.email = req.body.email
+    //             // result.password = req.body.password
+    //             data.phone = req.body.phone
+    //             // data.save()
+    //             res.send("hello")
+    //             console.log(err)
+    //         } else {
+    //             data.name = req.body.name
+    //             data.email = req.body.email
+    //             // result.password = req.body.password
+    //             // data.phone = req.body.phone
+    //             data.profile_file = req.file.filename;
+    //             data.profile_url = "http://localhost:6544/upload/" + req.file.filename;
+    //             // data.profile_url = "https://bookstorelibrary.herokuapp.com/upload/" + req.file.filename;
+    //             data.save(function (err) {
+    //                 if (err) {
+    //                     console.log(err);
+    //                 }
+    //             });
+    //             res.send("hellllll")
+    //         }
+    //     })
+    // });
 
     router.put('/e/:id', upload, async (req, res) => {
 
