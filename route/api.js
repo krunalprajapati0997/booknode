@@ -281,7 +281,7 @@ module.exports = function (router) {
     });
 
     router.post('/login', function (req, res) {
-        New.findOne({ email: req.body.email,phone: req.body.phone }).select('email,phone, password').exec(function (err, user) {
+        New.findOne({ email: req.body.email}).select('email,phone, password').exec(function (err, user) {
             if (err) throw err;
             else {
                 if (!user) {
@@ -295,7 +295,7 @@ module.exports = function (router) {
                             res.json({ success: false, message: 'Could not authenticate password' });
                         } else {
                             // res.send(user);
-                            var token = jwt.sign({ email: user.email,phone: user.phone, id: user._id }, secret, { expiresIn: '24h' });
+                            var token = jwt.sign({ email: user.email,id: user._id }, secret, { expiresIn: '24h' });
                             res.json({ success: true, message: 'User authenticated!', token: token });
                         }
                     }
@@ -329,8 +329,8 @@ module.exports = function (router) {
                                     res.status(200).json({ data: data })
                                 })
                             // res.send(user);
-                            // var token = jwt.sign({ phone: user.phone, id: user._id }, secret, { expiresIn: '24h' });
-                            // res.json({ success: true, message: 'User authenticated!', token: token });
+                            var token = jwt.sign({ phone: user.phone, id: user._id }, secret, { expiresIn: '24h' });
+                            res.json({ success: true, message: 'User authenticated!', token: token });
 
                         }
 
