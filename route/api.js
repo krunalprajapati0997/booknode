@@ -12,7 +12,8 @@ const { ObjectId } = require("mongodb")
 const { OAuth2Client } = require('google-auth-library');
 const { Console } = require("console");
 const client1 = new OAuth2Client(process.env.CLIENT_ID)
-CLIENT_ID = "909333294270-7rl7blhp6a051hdp7nfj95am8lc4ur1t.apps.googleusercontent.com"
+CLIENT_ID = "909333294270-t81q76b5bcsp3ccgjesdo18215akkre8.apps.googleusercontent.com"
+
 
 const jwt = require('jsonwebtoken');
 var secret = 'harrypotter';
